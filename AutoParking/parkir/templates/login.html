@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Login</title>
+    {% load static %}
+    <link rel="shortcut icon" href="{% static "assets/Auto Parking.png" %}" type="image/x-icon">
+    <link rel="stylesheet" href=" {% static "css/login.css" %} ">
+</head>
+<body>
+    <div class="container">
+        <br>
+        <h1>Auto <span>Parking</span></h1>
+        <p>Modern Automated Parking System <br> with Reall-Time Monitoring </p>
+        <br>
+        <img src=" {% static "assets/Auto Parking.png" %} " alt="" class="img">
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+    <header>
+        <p class="pe" >Log In</p>
+        <div class="box">
+            <input type="username" name="username" id="username" placeholder="Enter Username" required>
+            <input type="password" name="password" id="password" placeholder="Enter password" required>
+            <span class="toggle-password" onclick="togglePassword()">👁</span>
+        </div>
+
+
+        <div class="btn-log">
+            <button type="submit">Log In</button>
+        </div>
+    </header>
+    </form>
+
+    {% if error %}
+    <script>
+        alert("Username atau password salah!");
+    </script>
+    {% endif %}
+
+    <script>
+        function togglePassword() {
+            const password = document.getElementById("password");
+            if (password.type === "password") {
+                password.type = "text";
+            } else {
+                password.type = "password";
+            }
+        }
+    </script>
+
+</body>
+</html>

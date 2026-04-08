@@ -1,0 +1,12 @@
+STRUK AUTOPARKING
+---------------------------------------------
+Jenis Transaksi : Cash
+ID Card         : 36100207
+Masuk           : 2026-04-02 06:16:39
+Keluar          : 2026-04-08 11:55:14
+Plat Nomor      : T 9235 TS
+Lama Parkir     : 150 jam
+Biaya Parkir    : Rp 300,000
+---------------------------------------------
+Operator        : erik1 (Pagi)
+=============================================

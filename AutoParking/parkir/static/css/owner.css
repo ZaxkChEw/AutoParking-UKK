@@ -1,0 +1,107 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f8f9fa;
+  color: #263238;
+  font-family: "Roboto", sans-serif;
+}
+
+.welcome {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.logo {
+  font-weight: 700;
+  color: #f9a825;
+  font-size: 1.6rem;
+}
+
+.navbar-owner {
+  background-color: #111;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 12px;
+}
+
+.card-custom {
+  border: 1.5px solid #e0e0e0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-custom h5 {
+  font-size: .9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #f57c00;
+  margin-bottom: 14px;
+}
+
+.table thead tr {
+  background: #111;
+  color: #fff;
+}
+
+.table thead th {
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  border: none;
+  padding: 11px 14px;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.table tbody tr:hover {
+  background: #fff8e1;
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table tbody td {
+  border: none;
+  padding: 10px 14px;
+  font-size: .88rem;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: .75rem;
+  font-weight: 600;
+}
+
+.status-in {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.status-out {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.status-done {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+input:focus,
+select:focus {
+  box-shadow: none !important;
+  border-color: #f57c00 !important;
+}

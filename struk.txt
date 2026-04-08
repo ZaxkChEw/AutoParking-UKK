@@ -1,0 +1,12 @@
+STRUK AUTOPARKING
+
+---------------------------------------------
+Jenis transaksi : (cash)
+ID Card         : (sama in sama yang di db)
+Masuk           : (sama in sama yang di db)
+Keluar          : (sama in sama yang di db)
+Plat Nomor      : (sama in sama yang di db)
+Lama            : (sama in sama yang di db)
+Biaya Parkir    : (sama in sama yang di db)
+---------------------------------------------
+Operator : (nama petugas), (pagi, siang, malam [sesuai jam])

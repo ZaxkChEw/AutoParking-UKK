@@ -1,0 +1,259 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Petugas - Auto Parking</title>
+    <link rel="stylesheet" href="{% static 'css/petugas.css' %}">
+    <link rel="shortcut icon" href="{% static "assets/Auto Parking.png" %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container py-4">
+
+    <!-- HEADER -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-4">
+            <div class="welcome">👋 Selamat Datang, {{ request.session.username }}</div>
+        </div>
+        <div class="col-4 text-center">
+            <div class="logo">Auto Parking</div>
+        </div>
+        <div class="col-4 text-end">
+            <a href="/logout/" class="btn btn-dark btn-sm">Logout</a>
+        </div>
+    </div>
+
+    <!-- AREA CARDS -->
+    <div class="card card-custom p-3 mb-4">
+        <h5 class="mb-3">Area Parkir</h5>
+        <div class="table-responsive">
+            <table class="table mb-0 align-middle" style="min-width: 600px;">
+                <thead style="background:#111; color:#fff;">
+                    <tr>
+                        <th>Kode</th>
+                        <th>Nama Area</th>
+                        <th>Kapasitas</th>
+                        <th>Sedang Parkir</th>
+                        <th>Selesai</th>
+                        <th>Tersedia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in data_area %}
+                    <tr>
+                        <td><strong>{{ item.area.kd_area }}</strong></td>
+                        <td>{{ item.area.nama_area }}</td>
+                        <td>{{ item.area.kapasitas }}</td>
+                        <td><span class="badge" style="background:#f57c00;">{{ item.aktif }}</span></td>
+                        <td><span class="badge bg-secondary">{{ item.selesai }}</span></td>
+                        <td><span class="badge bg-success">{{ item.tersedia }}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">Belum ada area parkir</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- KENDARAAN SEDANG PARKIR -->
+    <div class="card card-custom p-3 mb-4">
+        <h5>Kendaraan Sedang Parkir</h5>
+        <div class="table-container">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Area</th>
+                        <th>Kd Transaksi</th>
+                        <th>Card ID</th>
+                        <th>Plat No</th>
+                        <th>Masuk</th>
+                        <th>Durasi</th>
+                        <th>Biaya</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for k in kendaraan_masuk %}
+                    <tr>
+                        <td><strong>{{ k.kd_area.kd_area }}</strong></td>
+                        <td>{{ k.kd_transaksi }}</td>
+                        <td>{{ k.card_id }}</td>
+                        <td><strong>{{ k.noPlat }}</strong></td>
+                        <td>{{ k.waktu_masuk|date:"H:i:s" }}</td>
+                        <td>{{ k.durasi_display }} jam</td>
+                        <td>Rp {{ k.biaya_display|floatformat:0 }}</td>
+                        <td><span class="status-badge status-in">IN</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">Tidak ada kendaraan yang sedang parkir</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- BUKA PALANG -->
+    <div class="card card-custom p-3 mb-4">
+        <h5>Menunggu Buka Palang Keluar</h5>
+        <div class="table-container">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Area</th>
+                        <th>Kd Transaksi</th>
+                        <th>Card ID</th>
+                        <th>Plat No</th>
+                        <th>Masuk</th>
+                        <th>Keluar</th>
+                        <th>Durasi</th>
+                        <th>Biaya</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for k in kendaraan_keluar %}
+                    <tr>
+                        <td><strong>{{ k.kd_area.kd_area }}</strong></td>
+                        <td>{{ k.kd_transaksi }}</td>
+                        <td>{{ k.card_id }}</td>
+                        <td><strong>{{ k.noPlat }}</strong></td>
+                        <td>{{ k.waktu_masuk|date:"H:i:s" }}</td>
+                        <td>{{ k.waktu_keluar|date:"H:i:s" }}</td>
+                        <td>{{ k.durasi_display }} jam</td>
+                        <td>Rp {{ k.biaya_display|floatformat:0 }}</td>
+                        <td><span class="status-badge status-out">OUT</span></td>
+                        <td>
+                            <button class="btn btn-success btn-sm"
+                                onclick="aksiBuka('{{ k.kd_transaksi }}', '{{ k.noPlat }}', {{ k.biaya_display }})">
+                                🔓 Buka Palang
+                            </button>
+                            <button class="btn btn-danger btn-sm"
+                                onclick="aksiTolak('{{ k.kd_transaksi }}', '{{ k.card_id }}')">
+                                ❌ Tolak
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10" class="text-center py-4">Tidak ada kendaraan yang menunggu keluar</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- LOG RIWAYAT -->
+    <div class="card card-custom p-3">
+        <h5>Log Riwayat Transaksi</h5>
+        <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Area</th>
+                        <th>Kd Transaksi</th>
+                        <th>Card ID</th>
+                        <th>Plat No</th>
+                        <th>Masuk</th>
+                        <th>Keluar</th>
+                        <th>Durasi</th>
+                        <th>Biaya</th>
+                        <th>Tanggal</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for l in log_riwayat %}
+                    <tr>
+                        <td>{{ l.no_urut }}</td>
+                        <td><strong>{{ l.kd_area.kd_area }}</strong></td>
+                        <td>{{ l.kd_transaksi }}</td>
+                        <td>{{ l.card_id }}</td>
+                        <td><strong>{{ l.noPlat }}</strong></td>
+                        <td>{{ l.waktu_masuk|date:"H:i:s" }}</td>
+                        <td>{{ l.waktu_keluar|date:"H:i:s" }}</td>
+                        <td>{{ l.durasi_display }} jam</td>
+                        <td>Rp {{ l.biaya|floatformat:0 }}</td>
+                        <td>{{ l.waktu_keluar|date:"d/m/Y" }}</td>
+                        <td><span class="status-badge status-done">DONE</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="11" class="text-center py-4">Belum ada riwayat transaksi</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function getCookie(name) {
+    let val = null;
+    document.cookie.split(';').forEach(c => {
+        c = c.trim();
+        if (c.startsWith(name + '=')) val = decodeURIComponent(c.slice(name.length + 1));
+    });
+    return val;
+}
+function aksiBuka(kdTransaksi, noPlat, biaya) {
+    if (!confirm(`Buka palang keluar untuk ${noPlat}?\nBiaya: Rp ${Number(biaya).toLocaleString('id-ID')}`)) return;
+    fetch(`/petugas/aksi/keluar/${kdTransaksi}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+    })
+    .then(r => r.json())
+    .then(data => {
+        alert(data.success ? `✅ Palang dibuka!\nBiaya: Rp ${Number(biaya).toLocaleString('id-ID')}` : `❌ ${data.message}`);
+        location.reload();
+    });
+}
+function aksiTolak(kdTransaksi, cardId) {
+    if (!confirm(`Tolak keluar untuk Card ID: ${cardId}?\nKendaraan akan dikembalikan ke status IN.`)) return;
+    fetch(`/petugas/aksi/tolak/${kdTransaksi}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+    })
+    .then(r => r.json())
+    .then(data => {
+        alert(data.message);
+        location.reload();
+    });
+}
+
+setInterval(() => {
+    fetch('/cek-struk/')
+        .then(r => r.json())
+        .then(data => {
+            console.log("[POLLING] Response:", data);
+            if (data.ada) {
+                const blob = new Blob([data.struk], { type: 'text/plain' });
+                const url  = URL.createObjectURL(blob);
+                const a    = document.createElement('a');
+                a.href     = url;
+                a.download = `struk_${data.kd_transaksi}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        });
+}, 2000);
+
+setInterval(() => location.reload(), 5000);
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

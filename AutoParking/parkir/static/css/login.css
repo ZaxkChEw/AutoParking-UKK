@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Bodoni+Moda+SC:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Cal+Sans&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Raleway:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-image: url(../assets/background_login.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    font-family: 'Roboto', sans-serif;
+}
+
+.container {
+    position: absolute;
+    left: 14%;
+    top: 18%;
+    font-size: 25px;
+}
+
+.container h1 {
+    color: #263238;
+}
+
+span {
+    color: #f9a825;
+}
+
+
+
+header {
+    width: 320px;
+    height: 350px;
+    position: absolute;
+    top: 25%;
+    left: 57%;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.box {
+    margin-top: 10%;
+}
+
+.pe {
+    color: #fcfcfc;
+    font-size: 25px;
+    text-align: center;
+    padding-top: 2.5rem;
+    font-weight: bold;
+}
+
+.pn {
+    color: #263238;
+}
+
+.img {
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+    width: 250px;
+    height: 250px;
+    border-radius: 15px;
+}
+
+.box input {
+    width: 75%;
+    grid-column: 2;
+    margin: 10px;
+    padding: 8px 18px;
+    margin-left: 21px;
+    outline: none;
+    background: transparent;
+    border-bottom: 2px solid black;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    color: #fcfcfc;
+}
+
+.box input::placeholder {
+    color: #fcfcfc;
+    opacity: 1;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #fcfcfc;
+    font-size: 18px;
+}
+
+.btn-log {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin-top: 10%;
+}
+
+button {
+    background-color: #263238;
+    color: #fcfcfc;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-log button {
+    width: 17rem;
+    height: 2rem;
+    font-size: 15px;
+    font-weight: bold;
+
+}
+
+button:hover {
+    background-color: #f9a825;
+    color: #263238
+}

@@ -1,0 +1,356 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Auto Parking</title>
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link rel="shortcut icon" href="{% static "assets/Auto Parking.png" %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container py-4">
+
+    <!-- HEADER -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-4">
+            <div class="welcome">👋 Selamat Datang, {{ request.session.username }}</div>
+        </div>
+        <div class="col-4 text-center">
+            <div class="logo">Auto Parking</div>
+        </div>
+        <div class="col-4 text-end">
+            <a href="/logout/" class="btn btn-dark btn-sm">Logout</a>
+        </div>
+    </div>
+
+    <!-- STAT -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card stat-orange">
+                <div class="small">Sedang Parkir</div>
+                <h2 class="fw-bold">{{ sedang_parkir }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card stat-orange">
+                <div class="small">Total Selesai</div>
+                <h2 class="fw-bold">{{ total_selesai }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card stat-orange">
+                <div class="small">Total Pendapatan</div>
+                <h2 class="fw-bold">Rp {{ total_pendapatan|floatformat:0 }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- CRUD USER -->
+    <div class="card card-custom mb-4">
+        <div class="card-body">
+            <div class="section-title" id="formTitle">Manajemen User</div>
+
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <input type="text" id="inputUsername" class="form-control" placeholder="Username">
+                </div>
+
+                <div class="col-md-3">
+                    <select id="inputRole" class="form-select">
+                        <option value="">Role</option>
+                        <option value="admin">Admin</option>
+                        <option value="petugas">Petugas</option>
+                        <option value="owner">Owner</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <input type="password" id="inputPassword" class="form-control" placeholder="Password">
+                </div>
+
+                <div class="col-md-3 d-flex gap-2">
+                    <button class="btn btn-success w-100" onclick="submitUser()">Simpan</button>
+                    <button class="btn btn-secondary w-100" onclick="resetForm()">Batal</button>
+                </div>
+            </div>
+
+            <!-- Hidden inputs -->
+            <input type="hidden" id="editUserId" value="">
+            <input type="hidden" id="formMode" value="tambah">
+
+            <!-- Alert -->
+            <div id="alertUser" class="alert mt-3 d-none" role="alert"></div>
+        </div>
+    </div>
+
+    <!-- LIST USER -->
+    <div class="card card-custom mb-4">
+        <div class="card-body">
+            <div class="section-title">Daftar User</div>
+            <div class="table-responsive" style="border-radius:10px; border: 1.5px solid #e0e0e0; overflow:hidden;">
+                <table class="table mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in daftar_user %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>
+                                {% if user.level == 'admin' %}
+                                    <span class="badge bg-dark">Admin</span>
+                                {% elif user.level == 'petugas' %}
+                                    <span class="badge" style="background:#f57c00;">Petugas</span>
+                                {% elif user.level == 'owner' %}
+                                    <span class="badge bg-success">Owner</span>
+                                {% endif %}
+                            </td>
+                            <td class="d-flex gap-1">
+                                <button class="btn btn-sm btn-warning"
+                                    onclick="isiFormEdit({{ user.id }}, '{{ user.username }}', '{{ user.level }}')">
+                                    Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger"
+                                    onclick="hapusUser({{ user.id }})">
+                                    Hapus
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Belum ada user</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- KAPASITAS -->
+    <div class="card card-custom">
+        <div class="card-body">
+            <div class="section-title" id="formTitleArea">Kapasitas Lahan Parkir</div>
+            <div class="row g-2 mb-3">
+                <div class="col-md-3">
+                    <input type="text" id="inputKdArea" class="form-control" placeholder="Kode Area (contoh: A)">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" id="inputNamaArea" class="form-control" placeholder="Nama Lahan">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" id="inputKapasitas" class="form-control" placeholder="Kapasitas">
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button class="btn btn-success w-100" onclick="submitArea()">Simpan</button>
+                    <button class="btn btn-secondary w-100" onclick="resetFormArea()">Batal</button>
+                </div>
+            </div>
+
+            <input type="hidden" id="editAreaId" value="">
+            <input type="hidden" id="formModeArea" value="tambah">
+            <div id="alertArea" class="alert mt-3 d-none" role="alert"></div>
+
+            <div class="table-responsive" style="border-radius:10px; border: 1.5px solid #e0e0e0; overflow:hidden;">
+                <table class="table mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Kode</th>
+                            <th>Nama Lahan</th>
+                            <th>Kapasitas</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for area in daftar_area %}
+                        <tr>
+                            <td>{{ area.kd_area }}</td>
+                            <td>{{ area.nama_area }}</td>
+                            <td>{{ area.kapasitas }}</td>
+                            <td class="d-flex gap-1">
+                                <button class="btn btn-sm btn-warning"
+                                    onclick="isiFormEditArea('{{ area.kd_area }}', '{{ area.nama_area }}', {{ area.kapasitas }})">
+                                    Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger"
+                                    onclick="hapusArea('{{ area.kd_area }}')">
+                                    Hapus
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Belum ada lahan parkir</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    <!-- CRUD USER -->
+function isiFormEdit(id, username, role) {
+    document.getElementById('editUserId').value   = id;
+    document.getElementById('formMode').value     = 'edit';
+    document.getElementById('inputUsername').value = username;
+    document.getElementById('inputRole').value    = role;
+    document.getElementById('inputPassword').value = '';
+    document.getElementById('formTitle').textContent = 'Edit User';
+    document.getElementById('alertUser').classList.add('d-none');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm() {
+    document.getElementById('editUserId').value    = '';
+    document.getElementById('formMode').value      = 'tambah';
+    document.getElementById('inputUsername').value = '';
+    document.getElementById('inputRole').value     = '';
+    document.getElementById('inputPassword').value = '';
+    document.getElementById('formTitle').textContent = 'Manajemen User';
+    document.getElementById('alertUser').classList.add('d-none');
+}
+
+function submitUser() {
+    const mode     = document.getElementById('formMode').value;
+    const id       = document.getElementById('editUserId').value;
+    const username = document.getElementById('inputUsername').value.trim();
+    const role     = document.getElementById('inputRole').value;
+    const password = document.getElementById('inputPassword').value.trim();
+    const alertEl  = document.getElementById('alertUser');
+
+    if (!username || !role || (mode === 'tambah' && !password)) {
+        alertEl.className = 'alert alert-danger mt-3';
+        alertEl.textContent = mode === 'tambah' ? 'Semua kolom harus diisi!' : 'Username dan role harus diisi!';
+        alertEl.classList.remove('d-none');
+        return;
+    }
+
+    const url = mode === 'tambah'
+        ? "{% url 'tambah_user' %}"
+        : `/admin/edit-user/${id}/`;
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: `username=${username}&role=${role}&password=${password}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        alertEl.className = `alert ${data.success ? 'alert-success' : 'alert-danger'} mt-3`;
+        alertEl.textContent = data.message;
+        alertEl.classList.remove('d-none');
+        if (data.success) {
+            resetForm();
+            setTimeout(() => location.reload(), 1000);
+        }
+    });
+}
+
+function hapusUser(id) {
+    if (!confirm('Yakin mau hapus user ini?')) return;
+
+    fetch(`/admin/hapus-user/${id}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) location.reload();
+        else alert(data.message);
+    });
+}
+
+<!-- CRUD AREA PARKIR -->
+function submitArea() {
+    const mode      = document.getElementById('formModeArea').value;
+    const id        = document.getElementById('editAreaId').value;
+    const kdArea    = document.getElementById('inputKdArea').value.trim();
+    const namaArea  = document.getElementById('inputNamaArea').value.trim();
+    const kapasitas = document.getElementById('inputKapasitas').value.trim();
+    const alertEl   = document.getElementById('alertArea');
+
+    if (!kdArea || !namaArea || !kapasitas) {
+        alertEl.className = 'alert alert-danger mt-3';
+        alertEl.textContent = 'Semua kolom harus diisi!';
+        alertEl.classList.remove('d-none');
+        return;
+    }
+
+    const url = mode === 'tambah'
+        ? "{% url 'tambah_area' %}"
+        : `/admin/edit-area/${id}/`;
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: `kd_area=${kdArea}&nama_area=${namaArea}&kapasitas=${kapasitas}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        alertEl.className = `alert ${data.success ? 'alert-success' : 'alert-danger'} mt-3`;
+        alertEl.textContent = data.message;
+        alertEl.classList.remove('d-none');
+        if (data.success) {
+            resetFormArea();
+            setTimeout(() => location.reload(), 1000);
+        }
+    });
+}
+
+function isiFormEditArea(kd, nama, kapasitas) {
+    document.getElementById('editAreaId').value      = kd;
+    document.getElementById('formModeArea').value    = 'edit';
+    document.getElementById('inputKdArea').value     = kd;
+    document.getElementById('inputNamaArea').value   = nama;
+    document.getElementById('inputKapasitas').value  = kapasitas;
+    document.getElementById('formTitleArea').textContent = 'Edit Lahan Parkir';
+    document.getElementById('alertArea').classList.add('d-none');
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+function resetFormArea() {
+    document.getElementById('editAreaId').value      = '';
+    document.getElementById('formModeArea').value    = 'tambah';
+    document.getElementById('inputKdArea').value     = '';
+    document.getElementById('inputNamaArea').value   = '';
+    document.getElementById('inputKapasitas').value  = '';
+    document.getElementById('formTitleArea').textContent = 'Kapasitas Lahan Parkir';
+    document.getElementById('alertArea').classList.add('d-none');
+}
+
+function hapusArea(kd) {
+    if (!confirm('Yakin mau hapus lahan ini?')) return;
+
+    fetch(`/admin/hapus-area/${kd}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) location.reload();
+        else alert(data.message);
+    });
+}
+</script>
+</body>
+</html>

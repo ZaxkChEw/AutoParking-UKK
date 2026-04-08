@@ -1,0 +1,12 @@
+STRUK AUTOPARKING
+---------------------------------------------
+Jenis Transaksi : Cash
+ID Card         : 53063956
+Masuk           : 2026-04-02 06:03:42
+Keluar          : 2026-04-02 06:03:58
+Plat Nomor      : M 206 VF
+Lama Parkir     : 1 jam
+Biaya Parkir    : Rp 2,000
+---------------------------------------------
+Operator        : erik1 (Pagi)
+=============================================

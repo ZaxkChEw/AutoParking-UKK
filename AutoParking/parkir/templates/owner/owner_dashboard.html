@@ -1,0 +1,240 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Owner - Auto Parking</title>
+    <link rel="stylesheet" href="{% static 'css/owner.css' %}">
+    <link rel="shortcut icon" href="{% static "assets/Auto Parking.png" %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container py-4">
+    <!-- HEADER -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-4">
+            <div class="welcome">👋 Selamat Datang, {{ request.session.username }}</div>
+        </div>
+        <div class="col-4 text-center">
+            <div class="logo">Auto Parking</div>
+        </div>
+        <div class="col-4 text-end">
+            <a href="/logout/" class="btn btn-dark btn-sm">Logout</a>
+        </div>
+    </div>
+
+    <!-- GRAFIK -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-8">
+            <div class="card card-custom p-3">
+                <h5>Pendapatan per Bulan</h5>
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-custom p-3">
+                <h5>Total Kendaraan</h5>
+                <canvas id="donutChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOG AKTIVITAS -->
+    <div class="card card-custom p-3 mb-4">
+        <h5>Log Aktivitas Kendaraan</h5>
+        <div class="table-responsive" style="border-radius:10px; border:1.5px solid #e0e0e0; overflow:hidden; max-height:250px; overflow-y:auto;">
+            <table class="table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Plat</th>
+                        <th>Area</th>
+                        <th>Masuk</th>
+                        <th>Keluar</th>
+                        <th>Durasi</th>
+                        <th>Biaya</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for l in log_aktivitas %}
+                    <tr>
+                        <td><strong>{{ l.noPlat }}</strong></td>
+                        <td>{{ l.kd_area.kd_area }}</td>
+                        <td>{{ l.waktu_masuk|date:"d/m H:i" }}</td>
+                        <td>{{ l.waktu_keluar|date:"d/m H:i"|default:"-" }}</td>
+                        <td>{{ l.durasi_display }} jam</td>
+                        <td>Rp {{ l.biaya_display|floatformat:0 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-3">Belum ada aktivitas</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TABEL TRANSAKSI -->
+    <div class="card card-custom p-3 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Data Transaksi</h5>
+            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalExport">
+                Export PDF
+            </button>
+        </div>
+
+        <!-- FILTER -->
+        <form method="GET" class="row g-2 mb-3">
+            <div class="col-md-3">
+                <label class="form-label fw-semibold" style="font-size:.8rem;">Dari Tanggal</label>
+                <input type="date" name="dari" class="form-control form-control-sm" value="{{ dari }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold" style="font-size:.8rem;">Sampai Tanggal</label>
+                <input type="date" name="sampai" class="form-control form-control-sm" value="{{ sampai }}">
+            </div>
+            <div class="col-md-6 d-flex align-items-end gap-1">
+                <button type="submit" name="status" value="SEMUA" class="btn btn-sm {% if status_filter == 'SEMUA' %}btn-dark{% else %}btn-outline-dark{% endif %} w-100">Semua</button>
+                <button type="submit" name="status" value="IN"    class="btn btn-sm {% if status_filter == 'IN' %}btn-warning{% else %}btn-outline-warning{% endif %} w-100">IN</button>
+                <button type="submit" name="status" value="OUT"   class="btn btn-sm {% if status_filter == 'OUT' %}btn-danger{% else %}btn-outline-danger{% endif %} w-100">OUT</button>
+                <button type="submit" name="status" value="DONE"  class="btn btn-sm {% if status_filter == 'DONE' %}btn-success{% else %}btn-outline-success{% endif %} w-100">DONE</button>
+            </div>
+        </form>
+
+        <!-- TABEL -->
+        <div style="border-radius:10px; border:1.5px solid #e0e0e0; overflow:hidden; max-height:320px; overflow-y:auto;">
+            <table class="table mb-0 align-middle" id="tabelTransaksi">
+                <thead style="position:sticky; top:0; z-index:2;">
+                    <tr>
+                        <th>No</th>
+                        <th>Plat No</th>
+                        <th>Area</th>
+                        <th>Jam Masuk</th>
+                        <th>Jam Keluar</th>
+                        <th>Durasi</th>
+                        <th>Biaya</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in transaksi %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ t.noPlat }}</strong></td>
+                        <td>{{ t.kd_area.kd_area }}</td>
+                        <td>{{ t.waktu_masuk|date:"d/m H:i" }}</td>
+                        <td>{{ t.waktu_keluar|date:"d/m H:i"|default:"-" }}</td>
+                        <td>{{ t.durasi_display }} jam</td>
+                        <td>Rp {{ t.biaya_display|floatformat:0 }}</td>
+                        <td>
+                            {% if t.status == 'IN' %}
+                                <span class="status-badge status-in">IN</span>
+                            {% elif t.status == 'OUT' %}
+                                <span class="status-badge status-out">OUT</span>
+                            {% elif t.status == 'DONE' %}
+                                <span class="status-badge status-done">DONE</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">Tidak ada data</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+        <!-- MODAL EXPORT -->
+        <div class="modal fade" id="modalExport" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius:14px;">
+                    <div class="modal-header" style="background:#111; color:#fff; border-radius:14px 14px 0 0;">
+                        <h6 class="modal-title fw-bold">Export PDF</h6>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted mb-3" style="font-size:.9rem;">Data yang akan diexport sesuai filter aktif.</p>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold" style="font-size:.85rem;">Dari Tanggal</label>
+                                <input type="date" id="exportDari" class="form-control form-control-sm" value="{{ dari }}">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold" style="font-size:.85rem;">Sampai Tanggal</label>
+                                <input type="date" id="exportSampai" class="form-control form-control-sm" value="{{ sampai }}">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="form-label fw-semibold" style="font-size:.85rem;">Status</label>
+                            <select id="exportStatus" class="form-select form-select-sm">
+                                <option value="SEMUA" {% if status_filter == 'SEMUA' %}selected{% endif %}>Semua</option>
+                                <option value="IN"    {% if status_filter == 'IN' %}selected{% endif %}>IN</option>
+                                <option value="OUT"   {% if status_filter == 'OUT' %}selected{% endif %}>OUT</option>
+                                <option value="DONE"  {% if status_filter == 'DONE' %}selected{% endif %}>DONE</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+                        <button class="btn btn-danger btn-sm" onclick="exportPDF()">Export PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const lineChart = new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: {
+        labels: {{ grafik_labels|safe }},
+        datasets: [{
+            label: 'Pendapatan',
+            data: {{ grafik_data|safe }},
+            borderColor: '#ff9800',
+            backgroundColor: 'rgba(255,152,0,0.2)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        scales: {
+            y: {
+                ticks: {
+                    callback: val => 'Rp ' + val.toLocaleString('id-ID')
+                }
+            }
+        }
+    }
+});
+
+const donutChart = new Chart(document.getElementById('donutChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Sedang Parkir', 'Selesai'],
+        datasets: [{
+            data: [{{ jumlah_in }}, {{ jumlah_done }}],
+            backgroundColor: ['#ff9800', '#212121']
+        }]
+    },
+    options: {
+        plugins: { legend: { position: 'bottom' } }
+    }
+});
+
+function exportPDF() {
+    const dari   = document.getElementById('exportDari').value;
+    const sampai = document.getElementById('exportSampai').value;
+    const status = document.getElementById('exportStatus').value;
+    window.location.href = `/owner/export-pdf/?dari=${dari}&sampai=${sampai}&status=${status}`;
+}
+</script>
+</body>
+</html>

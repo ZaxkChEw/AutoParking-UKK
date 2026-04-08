@@ -1,0 +1,12 @@
+STRUK AUTOPARKING
+---------------------------------------------
+Jenis Transaksi : Cash
+ID Card         : 36100207
+Masuk           : 2026-04-08 11:56:24
+Keluar          : 2026-04-08 11:56:33
+Plat Nomor      : K 7619 BN
+Lama Parkir     : 1 jam
+Biaya Parkir    : Rp 2,000
+---------------------------------------------
+Operator        : erik1 (Pagi)
+=============================================
