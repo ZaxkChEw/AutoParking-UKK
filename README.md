@@ -26,3 +26,7 @@ username
 password
 1. gege5
 2. pol123/pol7
+
+
+more information about the application system
+https://www.notion.so/Sistem-Parkir-2f70a91d51df80aba551f642faa66e19?source=copy_link
